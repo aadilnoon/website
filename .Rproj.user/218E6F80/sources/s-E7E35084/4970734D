@@ -5,14 +5,14 @@
     "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "2041014913",
+    "hash" : "0",
     "id" : "4970734D",
-    "lastKnownWriteTime" : 1589529208,
-    "last_content_update" : 1589529208677,
+    "lastKnownWriteTime" : 1589530480,
+    "last_content_update" : 1589530480313,
     "path" : "C:/Users/Aadil Noon/Desktop/Website/config.toml",
     "project_path" : "config.toml",
     "properties" : {
-        "cursorPosition" : "13,21",
+        "cursorPosition" : "6,20",
         "scrollLine" : "0"
     },
     "read_only" : false,

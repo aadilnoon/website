@@ -1,0 +1,48 @@
+---
+title: "Python 3mers formula"
+author: "Aadil Noon"
+date: '2020-05-15'
+output: pdf_document
+description: ''
+slug: python-3mers-formula
+tags: []
+categories:
+- projects
+- python
+---
+
+
+
+<pre class="python"><code>my_seq1 = &quot;gctcgtgtctgcgaggcttggttccctgaaatgcaaagatgtactttcaatgccttcgacctattggtgcacgtggtgcc&quot;
+def count_kmers(read, k):
+    &quot;&quot;&quot;Count kmer occurrences in a given read.
+
+    Parameters
+    ----------
+    read : string
+        A single DNA sequence.
+    k : int
+        The value of k for which to count kmers.
+
+    Returns
+    -------
+    counts : dictionary, {&#39;string&#39;: int}
+        A dictionary of counts keyed by their individual kmers (strings
+        of length k).
+
+    Examples
+    --------
+    &gt;&gt;&gt; count_kmers(&quot;GATGAT&quot;, 3)
+    {&#39;ATG&#39;: 1, &#39;GAT&#39;: 2, &#39;TGA&#39;: 1}
+    &quot;&quot;&quot;
+    counts = {}
+    num_kmers = len(read) - k + 1
+    for i in range(num_kmers):
+        kmer = read[i:i+k]
+        if kmer not in counts:
+            counts[kmer] = 0
+        counts[kmer] += 1
+    return counts
+count_kmers(my_seq1,3)</code></pre>
+<pre><code>## {&#39;gct&#39;: 2, &#39;ctc&#39;: 1, &#39;tcg&#39;: 2, &#39;cgt&#39;: 2, &#39;gtg&#39;: 4, &#39;tgt&#39;: 2, &#39;gtc&#39;: 1, &#39;tct&#39;: 1, &#39;ctg&#39;: 2, &#39;tgc&#39;: 5, &#39;gcg&#39;: 1, &#39;cga&#39;: 2, &#39;gag&#39;: 1, &#39;agg&#39;: 1, &#39;ggc&#39;: 1, &#39;ctt&#39;: 3, &#39;ttg&#39;: 2, &#39;tgg&#39;: 3, &#39;ggt&#39;: 3, &#39;gtt&#39;: 1, &#39;ttc&#39;: 3, &#39;tcc&#39;: 1, &#39;ccc&#39;: 1, &#39;cct&#39;: 3, &#39;tga&#39;: 1, &#39;gaa&#39;: 1, &#39;aaa&#39;: 2, &#39;aat&#39;: 2, &#39;atg&#39;: 3, &#39;gca&#39;: 2, &#39;caa&#39;: 2, &#39;aag&#39;: 1, &#39;aga&#39;: 1, &#39;gat&#39;: 1, &#39;gta&#39;: 1, &#39;tac&#39;: 1, &#39;act&#39;: 1, &#39;ttt&#39;: 1, &#39;tca&#39;: 1, &#39;gcc&#39;: 2, &#39;gac&#39;: 1, &#39;acc&#39;: 1, &#39;cta&#39;: 1, &#39;tat&#39;: 1, &#39;att&#39;: 1, &#39;cac&#39;: 1, &#39;acg&#39;: 1}</code></pre>
+<p>The code above creates a formula to see the unique possible codons in a DNA sequence</p>

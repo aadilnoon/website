@@ -6,65 +6,18 @@
     <description>Recent content in Blogs on Portfolio</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-US</language>
-    <lastBuildDate>Thu, 23 Jul 2015 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Fri, 15 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Hello R Markdown</title>
-      <link>/blog/2015-07-23-r-rmarkdown/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
+      <title>Python 3mers formula</title>
+      <link>/blog/python-3mers-formula/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
       
-      <guid>/blog/2015-07-23-r-rmarkdown/</guid>
-      <description>R MarkdownThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-You can embed an R code chunk like this:
-summary(cars)## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
-    </item>
-    
-    <item>
-      <title>Creating a New Theme</title>
-      <link>/blog/creating-a-new-theme/</link>
-      <pubDate>Sun, 28 Sep 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/creating-a-new-theme/</guid>
-      <description>Introduction This tutorial will show you how to create a simple theme in Hugo. I assume that you are familiar with HTML, the bash command line, and that you are comfortable using Markdown to format content. I&amp;rsquo;ll explain how Hugo uses templates and how you can organize your templates to create a theme. I won&amp;rsquo;t cover using CSS to style your theme.
-We&amp;rsquo;ll start with creating a new site with a very basic template.</description>
-    </item>
-    
-    <item>
-      <title>(Hu)go Template Primer</title>
-      <link>/blog/goisforlovers/</link>
-      <pubDate>Wed, 02 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/goisforlovers/</guid>
-      <description>Hugo uses the excellent go html/template library for its template engine. It is an extremely lightweight engine that provides a very small amount of logic. In our experience that it is just the right amount of logic to be able to create a good static website. If you have used other template systems from different languages or frameworks you will find a lot of similarities in go templates.
-This document is a brief primer on using go templates.</description>
-    </item>
-    
-    <item>
-      <title>Getting Started with Hugo</title>
-      <link>/blog/hugoisforlovers/</link>
-      <pubDate>Wed, 02 Apr 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/hugoisforlovers/</guid>
-      <description>Step 1. Install Hugo Goto hugo releases and download the appropriate version for your os and architecture.
-Save it somewhere specific as we will be using it in the next step.
-More complete instructions are available at installing hugo
-Step 2. Build the Docs Hugo has its own example site which happens to also be the documentation site you are reading right now.
-Follow the following steps:
- Clone the hugo repository Go into the repo Run hugo in server mode and build the docs Open your browser to http://localhost:1313  Corresponding pseudo commands:</description>
-    </item>
-    
-    <item>
-      <title>Migrate to Hugo from Jekyll</title>
-      <link>/blog/migrate-from-jekyll/</link>
-      <pubDate>Mon, 10 Mar 2014 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/migrate-from-jekyll/</guid>
-      <description>Move static content to static Jekyll has a rule that any directory not starting with _ will be copied as-is to the _site output. Hugo keeps all static content under static. You should therefore move it all there. With Jekyll, something that looked like
-▾ &amp;lt;root&amp;gt;/ ▾ images/ logo.png  should become
-▾ &amp;lt;root&amp;gt;/ ▾ static/ ▾ images/ logo.png  Additionally, you&amp;rsquo;ll want any files that should reside at the root (such as CNAME) to be moved to static.</description>
+      <guid>/blog/python-3mers-formula/</guid>
+      <description>my_seq1 = &amp;quot;gctcgtgtctgcgaggcttggttccctgaaatgcaaagatgtactttcaatgccttcgacctattggtgcacgtggtgcc&amp;quot;def count_kmers(read, k):&amp;quot;&amp;quot;&amp;quot;Count kmer occurrences in a given read.Parameters----------read : stringA single DNA sequence.k : intThe value of k for which to count kmers.Returns-------counts : dictionary, {&amp;#39;string&amp;#39;: int}A dictionary of counts keyed by their individual kmers (stringsof length k).Examples--------&amp;gt;&amp;gt;&amp;gt; count_kmers(&amp;quot;GATGAT&amp;quot;, 3){&amp;#39;ATG&amp;#39;: 1, &amp;#39;GAT&amp;#39;: 2, &amp;#39;TGA&amp;#39;: 1}&amp;quot;&amp;quot;&amp;quot;counts = {}num_kmers = len(read) - k + 1for i in range(num_kmers):kmer = read[i:i+k]if kmer not in counts:counts[kmer] = 0counts[kmer] += 1return countscount_kmers(my_seq1,3)## {&amp;#39;gct&amp;#39;: 2, &amp;#39;ctc&amp;#39;: 1, &amp;#39;tcg&amp;#39;: 2, &amp;#39;cgt&amp;#39;: 2, &amp;#39;gtg&amp;#39;: 4, &amp;#39;tgt&amp;#39;: 2, &amp;#39;gtc&amp;#39;: 1, &amp;#39;tct&amp;#39;: 1, &amp;#39;ctg&amp;#39;: 2, &amp;#39;tgc&amp;#39;: 5, &amp;#39;gcg&amp;#39;: 1, &amp;#39;cga&amp;#39;: 2, &amp;#39;gag&amp;#39;: 1, &amp;#39;agg&amp;#39;: 1, &amp;#39;ggc&amp;#39;: 1, &amp;#39;ctt&amp;#39;: 3, &amp;#39;ttg&amp;#39;: 2, &amp;#39;tgg&amp;#39;: 3, &amp;#39;ggt&amp;#39;: 3, &amp;#39;gtt&amp;#39;: 1, &amp;#39;ttc&amp;#39;: 3, &amp;#39;tcc&amp;#39;: 1, &amp;#39;ccc&amp;#39;: 1, &amp;#39;cct&amp;#39;: 3, &amp;#39;tga&amp;#39;: 1, &amp;#39;gaa&amp;#39;: 1, &amp;#39;aaa&amp;#39;: 2, &amp;#39;aat&amp;#39;: 2, &amp;#39;atg&amp;#39;: 3, &amp;#39;gca&amp;#39;: 2, &amp;#39;caa&amp;#39;: 2, &amp;#39;aag&amp;#39;: 1, &amp;#39;aga&amp;#39;: 1, &amp;#39;gat&amp;#39;: 1, &amp;#39;gta&amp;#39;: 1, &amp;#39;tac&amp;#39;: 1, &amp;#39;act&amp;#39;: 1, &amp;#39;ttt&amp;#39;: 1, &amp;#39;tca&amp;#39;: 1, &amp;#39;gcc&amp;#39;: 2, &amp;#39;gac&amp;#39;: 1, &amp;#39;acc&amp;#39;: 1, &amp;#39;cta&amp;#39;: 1, &amp;#39;tat&amp;#39;: 1, &amp;#39;att&amp;#39;: 1, &amp;#39;cac&amp;#39;: 1, &amp;#39;acg&amp;#39;: 1}The code above creates a formula to see the unique possible codons in a DNA sequence</description>
     </item>
     
   </channel>

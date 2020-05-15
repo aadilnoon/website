@@ -12,6 +12,15 @@
     
     
     <item>
+      <title>Python 3mers formula</title>
+      <link>/blog/python-3mers-formula/</link>
+      <pubDate>Fri, 15 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/blog/python-3mers-formula/</guid>
+      <description>my_seq1 = &amp;quot;gctcgtgtctgcgaggcttggttccctgaaatgcaaagatgtactttcaatgccttcgacctattggtgcacgtggtgcc&amp;quot;def count_kmers(read, k):&amp;quot;&amp;quot;&amp;quot;Count kmer occurrences in a given read.Parameters----------read : stringA single DNA sequence.k : intThe value of k for which to count kmers.Returns-------counts : dictionary, {&amp;#39;string&amp;#39;: int}A dictionary of counts keyed by their individual kmers (stringsof length k).Examples--------&amp;gt;&amp;gt;&amp;gt; count_kmers(&amp;quot;GATGAT&amp;quot;, 3){&amp;#39;ATG&amp;#39;: 1, &amp;#39;GAT&amp;#39;: 2, &amp;#39;TGA&amp;#39;: 1}&amp;quot;&amp;quot;&amp;quot;counts = {}num_kmers = len(read) - k + 1for i in range(num_kmers):kmer = read[i:i+k]if kmer not in counts:counts[kmer] = 0counts[kmer] += 1return countscount_kmers(my_seq1,3)## {&amp;#39;gct&amp;#39;: 2, &amp;#39;ctc&amp;#39;: 1, &amp;#39;tcg&amp;#39;: 2, &amp;#39;cgt&amp;#39;: 2, &amp;#39;gtg&amp;#39;: 4, &amp;#39;tgt&amp;#39;: 2, &amp;#39;gtc&amp;#39;: 1, &amp;#39;tct&amp;#39;: 1, &amp;#39;ctg&amp;#39;: 2, &amp;#39;tgc&amp;#39;: 5, &amp;#39;gcg&amp;#39;: 1, &amp;#39;cga&amp;#39;: 2, &amp;#39;gag&amp;#39;: 1, &amp;#39;agg&amp;#39;: 1, &amp;#39;ggc&amp;#39;: 1, &amp;#39;ctt&amp;#39;: 3, &amp;#39;ttg&amp;#39;: 2, &amp;#39;tgg&amp;#39;: 3, &amp;#39;ggt&amp;#39;: 3, &amp;#39;gtt&amp;#39;: 1, &amp;#39;ttc&amp;#39;: 3, &amp;#39;tcc&amp;#39;: 1, &amp;#39;ccc&amp;#39;: 1, &amp;#39;cct&amp;#39;: 3, &amp;#39;tga&amp;#39;: 1, &amp;#39;gaa&amp;#39;: 1, &amp;#39;aaa&amp;#39;: 2, &amp;#39;aat&amp;#39;: 2, &amp;#39;atg&amp;#39;: 3, &amp;#39;gca&amp;#39;: 2, &amp;#39;caa&amp;#39;: 2, &amp;#39;aag&amp;#39;: 1, &amp;#39;aga&amp;#39;: 1, &amp;#39;gat&amp;#39;: 1, &amp;#39;gta&amp;#39;: 1, &amp;#39;tac&amp;#39;: 1, &amp;#39;act&amp;#39;: 1, &amp;#39;ttt&amp;#39;: 1, &amp;#39;tca&amp;#39;: 1, &amp;#39;gcc&amp;#39;: 2, &amp;#39;gac&amp;#39;: 1, &amp;#39;acc&amp;#39;: 1, &amp;#39;cta&amp;#39;: 1, &amp;#39;tat&amp;#39;: 1, &amp;#39;att&amp;#39;: 1, &amp;#39;cac&amp;#39;: 1, &amp;#39;acg&amp;#39;: 1}The code above creates a formula to see the unique possible codons in a DNA sequence</description>
+    </item>
+    
+    <item>
       <title>Projects</title>
       <link>/projects/</link>
       <pubDate>Sun, 02 Oct 2016 22:55:05 -0400</pubDate>

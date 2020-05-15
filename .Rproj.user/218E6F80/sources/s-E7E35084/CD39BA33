@@ -2,18 +2,18 @@
     "collab_server" : "",
     "contents" : "",
     "created" : 1589529382356.000,
-    "dirty" : true,
+    "dirty" : false,
     "encoding" : "UTF-8",
     "folds" : "",
-    "hash" : "0",
+    "hash" : "3300655849",
     "id" : "CD39BA33",
-    "lastKnownWriteTime" : 1589529381,
-    "last_content_update" : 1589529389569,
+    "lastKnownWriteTime" : 1589530393,
+    "last_content_update" : 1589530393907,
     "path" : "C:/Users/Aadil Noon/Desktop/Website/content/post/2020-05-15-python-3mers-formula.Rmd",
     "project_path" : "content/post/2020-05-15-python-3mers-formula.Rmd",
     "properties" : {
-        "cursorPosition" : "12,0",
-        "scrollLine" : "0"
+        "cursorPosition" : "13,91",
+        "scrollLine" : "9"
     },
     "read_only" : false,
     "read_only_alternatives" : [
