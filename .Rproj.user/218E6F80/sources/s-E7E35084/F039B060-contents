@@ -1,0 +1,46 @@
+---
+title: "Python 3mers"
+author: "Aadil Noon"
+date: '2020-05-15'
+output: pdf_document
+description: ''
+slug: python-3mers
+tags: []
+categories:
+- projects
+- python
+---
+```{python}
+my_seq1 = "tagggctaccgttggcctctaccttcacctaaaatattagcgctcatgggcgcactatggattcgtatgacaggtcgaatgcatatcgtaattttgagccagggagtaggcgataactggttacgctggtctacggaacatctggctcaaccacagtgacgttaaagtctgacgctccaacatatgatctagggatctgggaccgggtaataagaaaccaccaagtgaggagagatcatgctctagtaaggtcacgatcgtctatggtgtgctgacttctgaatgcttcgctacctccgatttcggcttagggggagcgtactagtcgcgatcacgctcgtgttccgtaatctcgatgcgacaaatatcaattttctcaaatgctaactatccgattaggagatgaagcccaagttcgtggtatgtagtaagttcttcacgcaattcaggactggcacattccatctgatagaggaaaagatattcggaagtgcggtgcgtcaggtcgttggctaaagataatttatcccgcttgtataggctgacgcttggtggatgagaggctcgtgttcgcagtgtcagaagctcttcacactgttgtgcggtgtacttattcttttgactggcgcttggaccctcatatcagtgtattaactggtcggaggtacagacggcgatttagctcacaagcaaattgtgtatgtgggcctctaatccatgaactcttctcggcgagacaccagacttcggcgtaggattcgttttgtttgaaggctttagtacttaaacttatgaccagccgtaccccagcgaaagaacgagttgttctaggtgtagctctttttttatgcgatagagccggtttcagcaagcgttgacagaccactggacccgaacggcagtgagtgagtatgaagtagtaagcggcattgtgtagctcggcaaaatacccgggttccgcacgtggccgaattgcgccctgttaggagttcgttgtgaa"
+def count_kmers(read, k):
+    """Count kmer occurrences in a given read.
+
+    Parameters
+    ----------
+    read : string
+        A single DNA sequence.
+    k : int
+        The value of k for which to count kmers.
+
+    Returns
+    -------
+    counts : dictionary, {'string': int}
+        A dictionary of counts keyed by their individual kmers (strings
+        of length k).
+
+    Examples
+    --------
+    >>> count_kmers("GATGAT", 3)
+    {'ATG': 1, 'GAT': 2, 'TGA': 1}
+    """
+    counts = {}
+    num_kmers = len(read) - k + 1
+    for i in range(num_kmers):
+        kmer = read[i:i+k]
+        if kmer not in counts:
+            counts[kmer] = 0
+        counts[kmer] += 1
+    return counts
+count_kmers(my_seq1,3)
+```
+

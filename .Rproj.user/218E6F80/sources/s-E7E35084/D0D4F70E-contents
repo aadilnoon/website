@@ -1,0 +1,11 @@
+---
+title: Python 3mers function
+author: Aadil Noon
+date: '2020-05-15'
+slug: python-3mers-function
+categories:
+  - python
+tags: []
+description: ''
+---
+#Below is a function to get all unique 3mers and counts from a DNA sequence. 

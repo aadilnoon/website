@@ -1,0 +1,3 @@
+"2","Error in install_miniconda() : 
+  cannot install Miniconda into a path containing spaces
+"
