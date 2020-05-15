@@ -1,0 +1,142 @@
+---
+title: "Project 1"
+author: "Aadil Noon"
+date: "3/8/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+
+```
+
+
+```{r}
+#Data sets
+library(ggplot2)
+library(readxl)
+library(dplyr)
+library(cluster)
+library(graphics)
+library(plyr)
+library(tidyverse)
+lifeexpec <- read_xlsx('Life expectancy (3).xlsx')
+airpol <- read_xlsx('AirPollution (2).xlsx')
+```
+
+*Introduction: The two datasets that I decided to take a look at are both from the world health association. One of them looks into the different levels of air pollution in different nations by looking at the concentration of fine particulate matter in the air. The second dataset looks at life expectancies of different countries. I chose these two becuase I am very interested in medicine and the intersections of politics, geography, and health outcomes. Although there are a host of variables which will influnce life expectancies I anticipate that the abundance of pollution will decrease life expectancies due to various health concerns, including respiratory disease.*
+
+
+```{R}
+#in order to make it easier to organize, I decided to remove the ranges from the data
+airpol<-airpol%>%separate(`Total Concentrations of fine particulate matter (PM2.5)`,into=c("A","B"))
+airpol<-airpol%>%unite(A, B, col="Total Concentrations of fine particulate matter (PM2.5)",sep=".")
+airpol<-airpol%>%separate(`Urban Concentrations of fine particulate matter (PM2.5)`,into=c("A","B"))
+airpol<-airpol%>%unite(A, B, col="Urban Concentrations of fine particulate matter (PM2.5)",sep=".")
+airpol<-airpol%>%separate(`Rural Concentrations of fine particulate matter (PM2.5)`,into=c("A","B"))
+airpol<-airpol%>%unite(A, B, col="Rural Concentrations of fine particulate matter (PM2.5)",sep=".")
+#This got rid of the ranges but also split up the data by whole numbers and decimals, so I united them
+airpol$`Total Concentrations of fine particulate matter (PM2.5)`<-as.numeric(airpol$`Total Concentrations of fine particulate matter (PM2.5)`)
+airpol$`Urban Concentrations of fine particulate matter (PM2.5)`<-as.numeric(airpol$`Urban Concentrations of fine particulate matter (PM2.5)`)
+airpol$`Rural Concentrations of fine particulate matter (PM2.5)`<-as.numeric(airpol$`Rural Concentrations of fine particulate matter (PM2.5)`)
+#I got rid of all the rows that were years other than 2016 so that I could compare the two datasets
+lifeexpec<-lifeexpec%>%pivot_wider(names_from = 'Year',values_from = 'Country')
+lifeexpec<-lifeexpec%>%select(-c('2000':'2015'))
+lifeexpec<-lifeexpec%>%na.omit()
+lifeexpec<-lifeexpec%>%rename(c('2016'='Country'))
+```
+
+```{R}
+#Joining
+#Because I only wanted data for countries in both sets, I used inner_join
+airpollifeexpec<-inner_join(lifeexpec,airpol,by="Country")
+
+```
+
+```{r}
+#Wrangling
+#Decided to take a look at the relationship between pollution and life expectancy
+airpollifeexpec%>%select(`Both Sexes' Life expectancy at birth in years`,`Total Concentrations of fine particulate matter (PM2.5)`,`Continent`)%>%group_by(Continent)%>%arrange(`Both Sexes' Life expectancy at birth in years`)
+#Made another collum to see which sex lives longer in which country 
+airpollifeexpec<-airpollifeexpec%>%mutate(`Sex with higher life expectancy at birth` =case_when(`Female Life expectancy at birth in years`<`Male Life expectancy at birth in years` ~ "Male",`Male Life expectancy at birth in years`<`Female Life expectancy at birth in years` ~ "Female"))
+airpollifeexpec%>%summarize_all(n_distinct)
+#Looked at Asian Countries
+airpollifeexpec %>% filter( Continent == "Asia")
+#summary of variables
+summary(airpollifeexpec$`Both Sexes' Life expectancy at birth in years`)
+summary(airpollifeexpec$`Both Sexes' Life expectancy at age 60 in years`)
+summary(airpollifeexpec$`Male Life expectancy at birth in years`)
+summary(airpollifeexpec$`Female Life expectancy at birth in years`)
+summary(airpollifeexpec$`Male Life expectancy at age 60 in years`)
+summary(airpollifeexpec$`Female Life expectancy at age 60 in years`)
+summary(airpollifeexpec$`Total Concentrations of fine particulate matter (PM2.5)`)
+summary(airpollifeexpec$`Urban Concentrations of fine particulate matter (PM2.5)`)
+summary(airpollifeexpec$`Rural Concentrations of fine particulate matter (PM2.5)`)
+#summary by grouping by Continent
+airpollifeexpec%>% group_by(Continent) %>%summarize(mean=mean(`Both Sexes' Life expectancy at birth in years`,na.rm=T), sd=sd(`Both Sexes' Life expectancy at birth in years`, na.rm=T))
+airpollifeexpec%>% group_by(Continent) %>%summarize(mean=mean(`Both Sexes' Life expectancy at age 60 in years`,na.rm=T), sd=sd(`Both Sexes' Life expectancy at age 60 in years`, na.rm=T))
+airpollifeexpec%>% group_by(Continent) %>%summarize(mean=mean(`Male Life expectancy at birth in years`,na.rm=T), sd=sd(`Male Life expectancy at birth in years`, na.rm=T))
+airpollifeexpec%>% group_by(Continent) %>%summarize(mean=mean(`Female Life expectancy at birth in years`,na.rm=T), sd=sd(`Female Life expectancy at birth in years`, na.rm=T))
+airpollifeexpec%>% group_by(Continent) %>%summarize(mean=mean(`Male Life expectancy at age 60 in years`,na.rm=T), sd=sd(`Male Life expectancy at age 60 in years`, na.rm=T))
+airpollifeexpec%>% group_by(Continent) %>%summarize(mean=mean(`Female Life expectancy at age 60 in years`,na.rm=T), sd=sd(`Female Life expectancy at age 60 in years`, na.rm=T))
+airpollifeexpec%>% group_by(Continent) %>%summarize(mean=mean(`Total Concentrations of fine particulate matter (PM2.5)`,na.rm=T), sd=sd(`Total Concentrations of fine particulate matter (PM2.5)`, na.rm=T))
+airpollifeexpec%>% group_by(Continent) %>%summarize(mean=mean(`Urban Concentrations of fine particulate matter (PM2.5)`,na.rm=T), sd=sd(`Urban Concentrations of fine particulate matter (PM2.5)`, na.rm=T))
+airpollifeexpec%>% group_by(Continent) %>%summarize(mean=mean(`Rural Concentrations of fine particulate matter (PM2.5)`,na.rm=T), sd=sd(`Rural Concentrations of fine particulate matter (PM2.5)`, na.rm=T))
+#Summary Grouping by Country
+airpollifeexpec%>% group_by(Country) %>%summarize(mean=mean(`Both Sexes' Life expectancy at birth in years`,na.rm=T), sd=sd(`Both Sexes' Life expectancy at birth in years`, na.rm=T))
+airpollifeexpec%>% group_by(Country) %>%summarize(mean=mean(`Both Sexes' Life expectancy at age 60 in years`,na.rm=T), sd=sd(`Both Sexes' Life expectancy at age 60 in years`, na.rm=T))
+airpollifeexpec%>% group_by(Country) %>%summarize(mean=mean(`Male Life expectancy at birth in years`,na.rm=T), sd=sd(`Male Life expectancy at birth in years`, na.rm=T))
+airpollifeexpec%>% group_by(Country) %>%summarize(mean=mean(`Female Life expectancy at birth in years`,na.rm=T), sd=sd(`Female Life expectancy at birth in years`, na.rm=T))
+airpollifeexpec%>% group_by(Country) %>%summarize(mean=mean(`Male Life expectancy at age 60 in years`,na.rm=T), sd=sd(`Male Life expectancy at age 60 in years`, na.rm=T))
+airpollifeexpec%>% group_by(Country) %>%summarize(mean=mean(`Female Life expectancy at age 60 in years`,na.rm=T), sd=sd(`Female Life expectancy at age 60 in years`, na.rm=T))
+airpollifeexpec%>% group_by(Country) %>%summarize(mean=mean(`Total Concentrations of fine particulate matter (PM2.5)`,na.rm=T), sd=sd(`Total Concentrations of fine particulate matter (PM2.5)`, na.rm=T))
+airpollifeexpec%>% group_by(Country) %>%summarize(mean=mean(`Urban Concentrations of fine particulate matter (PM2.5)`,na.rm=T), sd=sd(`Urban Concentrations of fine particulate matter (PM2.5)`, na.rm=T))
+airpollifeexpec%>% group_by(Country) %>%summarize(mean=mean(`Rural Concentrations of fine particulate matter (PM2.5)`,na.rm=T), sd=sd(`Rural Concentrations of fine particulate matter (PM2.5)`, na.rm=T))
+
+
+```
+*Some of the statistics I found include that the global average life expectancy at birth is 71.79 years. Furthermore, females tend to live longer than males, with expectancies of 74.14 and 69.44 years respectivaley.In addition, the global average concentration of fine particulate matter is 25.60. Urban areas have a higher concentration on average than rural, with 26.16 and 24.44 repesctivaley.*
+
+```{r}
+#Visualizing
+df<-airpollifeexpec%>%na.omit%>%select_if(is.numeric)
+cor<-cor(df)%>%as.data.frame%>%rownames_to_column%>%pivot_longer(-1,names_to="name",values_to="correlation")
+cor%>%ggplot(aes(rowname,name,fill=correlation))+geom_tile()+scale_fill_gradient2(low="red",mid="white",high="blue")+geom_text(aes(label=round(correlation,2)),color = "black", size = 4)+ theme(axis.text.x = element_text(angle = 90, hjust = 1))+coord_fixed() 
+```
+*The correlation heatmap above indicates that there is a negative correlation between the concentration of fine particulate matter and life expectancy. There is around a -0.5 correlation between the variables looking at pollution levels and those looking at life expectancies. In addition, all 6 forms of life expectancy are very correlated with one another. This makes logical sense and indicates that countries which have a higher life expectancy at birth have a higher one at age 60 and countries tend to have similar patterns in regard to sex. The variables which measure life expectancy are very correlated, as are those that measure pollution and those two groups of variables have a negative correlation.*
+```{r}
+#Visualizing
+ggplot(airpollifeexpec, aes(`Total Concentrations of fine particulate matter (PM2.5)`, `Both Sexes' Life expectancy at birth in years`, color=Continent,stat='summary'))+geom_point(size = 4, alpha = .5)
+```
+*Firstly, the graph visually presents how lower concentrations of particulate matter are generally associated with longer life spans. It is also interesting how the majority of the countries are clustered with high life expectancies and lower pollution, which could indicate a possible bias in the dataset, because these kind of countries tend to be more industrially deveolped and are therfore more avaliable for research. Further, it also seems as though a lot of African countries tend to have lower life expectancies despite having similar levels of pollution. This speaks to the plethora of factors which impact how long one lives. Finally it appears as though Asian countries tend to be the most polluted.*
+
+```{r}
+#Visualizing
+ggplot(airpollifeexpec, aes(`Both Sexes' Life expectancy at birth in years`,`Both Sexes' Life expectancy at age 60 in years`))+geom_point(size=3,aes(color=`Total Concentrations of fine particulate matter (PM2.5)`))+ scale_color_gradient(low="yellow", high="red")
+```
+*Firstly, this graphs speaks to the strong correlation between life expectancy at birth and that at 60. Secondly, the graph further shows how the level of fine particulate matter is negatively correlated with life expectancy. This adds to the data above and further provides validity to the argument that the level of pollution has a directly negative effect on how long people in a given country live for.*
+
+```{r}
+#Dimentionality Reduction
+pc_cluster <-kmeans(df, 5)
+kmean_withinss <- function(k) {
+cluster <- kmeans(df, k)
+return (cluster$tot.withinss) }
+wss <- sapply(2:30, kmean_withinss)
+elbow <-data.frame(2:30, wss)
+ggplot(elbow, aes(x = X2.30, y = wss)) +geom_point() +geom_line() +scale_x_continuous(breaks = seq(1, 30, by = 1))
+#according to elbow, curve has most dimishing return at 10
+kmeans1 <-kmeans(df, 10)
+kmeans1$size
+#pretty good homegoneity between clusters
+kmeansclust <- df %>% mutate(cluster=as.factor(kmeans1$cluster))
+kmeansclust %>% ggplot(aes(`Total Concentrations of fine particulate matter (PM2.5)`,`Both Sexes' Life expectancy at birth in years`, color=cluster)) + geom_point()
+pam1 <- df %>% pam(k=10)
+pamclust<-df %>% mutate(cluster=as.factor(pam1$clustering))
+pamclust %>% ggplot(aes(`Total Concentrations of fine particulate matter (PM2.5)`,`Both Sexes' Life expectancy at birth in years`,color=cluster)) + geom_point()
+pamclust %>% group_by(cluster) %>% summarize_if(is.numeric,mean,na.rm=T)
+```
+*The data did a good job of clustering into a group of 10. This could indicate that the previous way of labeling the countries by continent is limiting and is not a very accurate way of assesing a country's level of pollution or life expectancy. This speaks to the reductive nature of taking a diverse group of countries and putting them into a geographically assigned boundary which does not accurately reflect the political and cultural reality of the country. I believe this is one of the reasons that the world health organiztion and various other organiztions have begin to look at countries through the more specific lens of regions as opposed to looking at them through the reductive framework of continents.*
+```{R}

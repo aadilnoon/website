@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Aadil Noon" />
+    <meta name="description" content="Describe your website">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Project 1</title>
+    <meta name="generator" content="Hugo 0.70.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+        <li><a href="/resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project1/">Project 1</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          January 1, 0001
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<pre class="r"><code>#Data sets
+library(ggplot2)
+library(readxl)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(cluster)
+library(graphics)
+library(plyr)</code></pre>
+<pre><code>## ------------------------------------------------------------------------------</code></pre>
+<pre><code>## You have loaded plyr after dplyr - this is likely to cause problems.
+## If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
+## library(plyr); library(dplyr)</code></pre>
+<pre><code>## ------------------------------------------------------------------------------</code></pre>
+<pre><code>## 
+## Attaching package: &#39;plyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:dplyr&#39;:
+## 
+##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+##     summarize</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ------------------------------------------------------- tidyverse 1.3.0 --</code></pre>
+<pre><code>## v tibble  2.1.3     v purrr   0.3.3
+## v tidyr   1.0.2     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0</code></pre>
+<pre><code>## -- Conflicts ---------------------------------------------------------- tidyverse_conflicts() --
+## x plyr::arrange()   masks dplyr::arrange()
+## x purrr::compact()  masks plyr::compact()
+## x plyr::count()     masks dplyr::count()
+## x plyr::failwith()  masks dplyr::failwith()
+## x dplyr::filter()   masks stats::filter()
+## x plyr::id()        masks dplyr::id()
+## x dplyr::lag()      masks stats::lag()
+## x plyr::mutate()    masks dplyr::mutate()
+## x plyr::rename()    masks dplyr::rename()
+## x plyr::summarise() masks dplyr::summarise()
+## x plyr::summarize() masks dplyr::summarize()</code></pre>
+<pre class="r"><code>lifeexpec &lt;- read_xlsx(&#39;Life expectancy (3).xlsx&#39;)
+airpol &lt;- read_xlsx(&#39;AirPollution (2).xlsx&#39;)</code></pre>
+<p><em>Introduction: The two datasets that I decided to take a look at are both from the world health association. One of them looks into the different levels of air pollution in different nations by looking at the concentration of fine particulate matter in the air. The second dataset looks at life expectancies of different countries. I chose these two becuase I am very interested in medicine and the intersections of politics, geography, and health outcomes. Although there are a host of variables which will influnce life expectancies I anticipate that the abundance of pollution will decrease life expectancies due to various health concerns, including respiratory disease.</em></p>
+<pre class="r"><code>#in order to make it easier to organize, I decided to remove the ranges from the data
+airpol&lt;-airpol%&gt;%separate(`Total Concentrations of fine particulate matter (PM2.5)`,into=c(&quot;A&quot;,&quot;B&quot;))
+airpol&lt;-airpol%&gt;%unite(A, B, col=&quot;Total Concentrations of fine particulate matter (PM2.5)&quot;,sep=&quot;.&quot;)
+airpol&lt;-airpol%&gt;%separate(`Urban Concentrations of fine particulate matter (PM2.5)`,into=c(&quot;A&quot;,&quot;B&quot;))
+airpol&lt;-airpol%&gt;%unite(A, B, col=&quot;Urban Concentrations of fine particulate matter (PM2.5)&quot;,sep=&quot;.&quot;)
+airpol&lt;-airpol%&gt;%separate(`Rural Concentrations of fine particulate matter (PM2.5)`,into=c(&quot;A&quot;,&quot;B&quot;))
+airpol&lt;-airpol%&gt;%unite(A, B, col=&quot;Rural Concentrations of fine particulate matter (PM2.5)&quot;,sep=&quot;.&quot;)
+#This got rid of the ranges but also split up the data by whole numbers and decimals, so I united them
+airpol$`Total Concentrations of fine particulate matter (PM2.5)`&lt;-as.numeric(airpol$`Total Concentrations of fine particulate matter (PM2.5)`)
+airpol$`Urban Concentrations of fine particulate matter (PM2.5)`&lt;-as.numeric(airpol$`Urban Concentrations of fine particulate matter (PM2.5)`)
+airpol$`Rural Concentrations of fine particulate matter (PM2.5)`&lt;-as.numeric(airpol$`Rural Concentrations of fine particulate matter (PM2.5)`)
+#I got rid of all the rows that were years other than 2016 so that I could compare the two datasets
+lifeexpec&lt;-lifeexpec%&gt;%pivot_wider(names_from = &#39;Year&#39;,values_from = &#39;Country&#39;)
+lifeexpec&lt;-lifeexpec%&gt;%select(-c(&#39;2000&#39;:&#39;2015&#39;))
+lifeexpec&lt;-lifeexpec%&gt;%na.omit()
+lifeexpec&lt;-lifeexpec%&gt;%rename(c(&#39;2016&#39;=&#39;Country&#39;))</code></pre>
+<pre class="r"><code>#Joining
+#Because I only wanted data for countries in both sets, I used inner_join
+airpollifeexpec&lt;-inner_join(lifeexpec,airpol,by=&quot;Country&quot;)</code></pre>
+<pre class="r"><code>#Wrangling
+#Decided to take a look at the relationship between pollution and life expectancy
+airpollifeexpec%&gt;%select(`Both Sexes&#39; Life expectancy at birth in years`,`Total Concentrations of fine particulate matter (PM2.5)`,`Continent`)%&gt;%group_by(Continent)%&gt;%arrange(`Both Sexes&#39; Life expectancy at birth in years`)</code></pre>
+<pre><code>## # A tibble: 183 x 3
+## # Groups:   Continent [6]
+##    `Both Sexes&#39; Life expectancy a~ `Total Concentrations of fine part~ Continent
+##                              &lt;dbl&gt;                               &lt;dbl&gt; &lt;chr&gt;    
+##  1                            52.9                                27.8 Africa   
+##  2                            53                                  49.5 Africa   
+##  3                            53.1                                20.6 Africa   
+##  4                            54.3                                53   Africa   
+##  5                            54.6                                23.7 Africa   
+##  6                            55.2                                48.7 Africa   
+##  7                            55.4                                29.5 Africa   
+##  8                            57.7                                16.3 Africa   
+##  9                            58                                  31.2 Africa   
+## 10                            58.1                                65.3 Africa   
+## # ... with 173 more rows</code></pre>
+<pre class="r"><code>#Made another collum to see which sex lives longer in which country 
+airpollifeexpec&lt;-airpollifeexpec%&gt;%mutate(`Sex with higher life expectancy at birth` =case_when(`Female Life expectancy at birth in years`&lt;`Male Life expectancy at birth in years` ~ &quot;Male&quot;,`Male Life expectancy at birth in years`&lt;`Female Life expectancy at birth in years` ~ &quot;Female&quot;))
+airpollifeexpec%&gt;%summarize_all(n_distinct)</code></pre>
+<pre><code>## # A tibble: 1 x 12
+##   `Both Sexes&#39; Li~ `Male Life expe~ `Female Life ex~ `Both Sexes&#39; Li~
+##              &lt;int&gt;            &lt;int&gt;            &lt;int&gt;            &lt;int&gt;
+## 1              128              134              140               93
+## # ... with 8 more variables: `Male Life expectancy at age 60 in years` &lt;int&gt;,
+## #   `Female Life expectancy at age 60 in years` &lt;int&gt;, Country &lt;int&gt;, `Total
+## #   Concentrations of fine particulate matter (PM2.5)` &lt;int&gt;, `Urban
+## #   Concentrations of fine particulate matter (PM2.5)` &lt;int&gt;, `Rural
+## #   Concentrations of fine particulate matter (PM2.5)` &lt;int&gt;, Continent &lt;int&gt;,
+## #   `Sex with higher life expectancy at birth` &lt;int&gt;</code></pre>
+<pre class="r"><code>#Looked at Asian Countries
+airpollifeexpec %&gt;% filter( Continent == &quot;Asia&quot;)</code></pre>
+<pre><code>## # A tibble: 48 x 12
+##    `Both Sexes&#39; Li~ `Male Life expe~ `Female Life ex~ `Both Sexes&#39; Li~
+##               &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+##  1             62.7             61               64.5             16.3
+##  2             74.8             71.2             78.1             19.6
+##  3             73.1             70.3             75.7             18.9
+##  4             79.1             78.6             79.6             21.7
+##  5             72.7             71.1             74.4             19.6
+##  6             70.6             70.4             70.8             20.7
+##  7             76.4             75.3             77.6             20.4
+##  8             69.4             67.3             71.2             17.4
+##  9             76.4             75               77.9             19.9
+## 10             80.7             78.4             83.1             22.8
+## # ... with 38 more rows, and 8 more variables: `Male Life expectancy at age 60
+## #   in years` &lt;dbl&gt;, `Female Life expectancy at age 60 in years` &lt;dbl&gt;,
+## #   Country &lt;chr&gt;, `Total Concentrations of fine particulate matter
+## #   (PM2.5)` &lt;dbl&gt;, `Urban Concentrations of fine particulate matter
+## #   (PM2.5)` &lt;dbl&gt;, `Rural Concentrations of fine particulate matter
+## #   (PM2.5)` &lt;dbl&gt;, Continent &lt;chr&gt;, `Sex with higher life expectancy at
+## #   birth` &lt;chr&gt;</code></pre>
+<pre class="r"><code>#summary of variables
+summary(airpollifeexpec$`Both Sexes&#39; Life expectancy at birth in years`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   52.90   66.10   73.40   71.79   76.85   84.20</code></pre>
+<pre class="r"><code>summary(airpollifeexpec$`Both Sexes&#39; Life expectancy at age 60 in years`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   13.30   17.35   19.60   19.76   21.95   26.40</code></pre>
+<pre class="r"><code>summary(airpollifeexpec$`Male Life expectancy at birth in years`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   51.00   63.80   70.30   69.44   74.70   81.20</code></pre>
+<pre class="r"><code>summary(airpollifeexpec$`Female Life expectancy at birth in years`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   53.80   68.25   76.40   74.17   79.60   87.10</code></pre>
+<pre class="r"><code>summary(airpollifeexpec$`Male Life expectancy at age 60 in years`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   13.30   15.95   17.60   18.33   20.40   24.30</code></pre>
+<pre class="r"><code>summary(airpollifeexpec$`Female Life expectancy at age 60 in years`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   13.40   18.20   21.00   21.05   23.65   28.90</code></pre>
+<pre class="r"><code>summary(airpollifeexpec$`Total Concentrations of fine particulate matter (PM2.5)`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    5.70   14.45   21.00   25.60   32.90   94.30</code></pre>
+<pre class="r"><code>summary(airpollifeexpec$`Urban Concentrations of fine particulate matter (PM2.5)`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    5.80   14.90   21.50   26.16   32.95   99.50</code></pre>
+<pre class="r"><code>summary(airpollifeexpec$`Rural Concentrations of fine particulate matter (PM2.5)`)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##    5.20   12.55   19.50   24.44   35.00   81.30</code></pre>
+<pre class="r"><code>#summary by grouping by Continent
+airpollifeexpec%&gt;% group_by(Continent) %&gt;%summarize(mean=mean(`Both Sexes&#39; Life expectancy at birth in years`,na.rm=T), sd=sd(`Both Sexes&#39; Life expectancy at birth in years`, na.rm=T))</code></pre>
+<pre><code>##       mean       sd
+## 1 71.78798 7.633225</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Continent) %&gt;%summarize(mean=mean(`Both Sexes&#39; Life expectancy at age 60 in years`,na.rm=T), sd=sd(`Both Sexes&#39; Life expectancy at age 60 in years`, na.rm=T))</code></pre>
+<pre><code>##       mean       sd
+## 1 19.75519 2.994145</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Continent) %&gt;%summarize(mean=mean(`Male Life expectancy at birth in years`,na.rm=T), sd=sd(`Male Life expectancy at birth in years`, na.rm=T))</code></pre>
+<pre><code>##      mean       sd
+## 1 69.4377 7.361501</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Continent) %&gt;%summarize(mean=mean(`Female Life expectancy at birth in years`,na.rm=T), sd=sd(`Female Life expectancy at birth in years`, na.rm=T))</code></pre>
+<pre><code>##       mean       sd
+## 1 74.16503 8.024932</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Continent) %&gt;%summarize(mean=mean(`Male Life expectancy at age 60 in years`,na.rm=T), sd=sd(`Male Life expectancy at age 60 in years`, na.rm=T))</code></pre>
+<pre><code>##       mean       sd
+## 1 18.33224 2.743624</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Continent) %&gt;%summarize(mean=mean(`Female Life expectancy at age 60 in years`,na.rm=T), sd=sd(`Female Life expectancy at age 60 in years`, na.rm=T))</code></pre>
+<pre><code>##       mean       sd
+## 1 21.04699 3.347868</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Continent) %&gt;%summarize(mean=mean(`Total Concentrations of fine particulate matter (PM2.5)`,na.rm=T), sd=sd(`Total Concentrations of fine particulate matter (PM2.5)`, na.rm=T))</code></pre>
+<pre><code>##       mean       sd
+## 1 25.59617 16.53754</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Continent) %&gt;%summarize(mean=mean(`Urban Concentrations of fine particulate matter (PM2.5)`,na.rm=T), sd=sd(`Urban Concentrations of fine particulate matter (PM2.5)`, na.rm=T))</code></pre>
+<pre><code>##       mean      sd
+## 1 26.16393 16.8956</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Continent) %&gt;%summarize(mean=mean(`Rural Concentrations of fine particulate matter (PM2.5)`,na.rm=T), sd=sd(`Rural Concentrations of fine particulate matter (PM2.5)`, na.rm=T))</code></pre>
+<pre><code>##      mean       sd
+## 1 24.4388 15.94046</code></pre>
+<pre class="r"><code>#Summary Grouping by Country
+airpollifeexpec%&gt;% group_by(Country) %&gt;%summarize(mean=mean(`Both Sexes&#39; Life expectancy at birth in years`,na.rm=T), sd=sd(`Both Sexes&#39; Life expectancy at birth in years`, na.rm=T))</code></pre>
+<pre><code>##       mean       sd
+## 1 71.78798 7.633225</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Country) %&gt;%summarize(mean=mean(`Both Sexes&#39; Life expectancy at age 60 in years`,na.rm=T), sd=sd(`Both Sexes&#39; Life expectancy at age 60 in years`, na.rm=T))</code></pre>
+<pre><code>##       mean       sd
+## 1 19.75519 2.994145</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Country) %&gt;%summarize(mean=mean(`Male Life expectancy at birth in years`,na.rm=T), sd=sd(`Male Life expectancy at birth in years`, na.rm=T))</code></pre>
+<pre><code>##      mean       sd
+## 1 69.4377 7.361501</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Country) %&gt;%summarize(mean=mean(`Female Life expectancy at birth in years`,na.rm=T), sd=sd(`Female Life expectancy at birth in years`, na.rm=T))</code></pre>
+<pre><code>##       mean       sd
+## 1 74.16503 8.024932</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Country) %&gt;%summarize(mean=mean(`Male Life expectancy at age 60 in years`,na.rm=T), sd=sd(`Male Life expectancy at age 60 in years`, na.rm=T))</code></pre>
+<pre><code>##       mean       sd
+## 1 18.33224 2.743624</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Country) %&gt;%summarize(mean=mean(`Female Life expectancy at age 60 in years`,na.rm=T), sd=sd(`Female Life expectancy at age 60 in years`, na.rm=T))</code></pre>
+<pre><code>##       mean       sd
+## 1 21.04699 3.347868</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Country) %&gt;%summarize(mean=mean(`Total Concentrations of fine particulate matter (PM2.5)`,na.rm=T), sd=sd(`Total Concentrations of fine particulate matter (PM2.5)`, na.rm=T))</code></pre>
+<pre><code>##       mean       sd
+## 1 25.59617 16.53754</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Country) %&gt;%summarize(mean=mean(`Urban Concentrations of fine particulate matter (PM2.5)`,na.rm=T), sd=sd(`Urban Concentrations of fine particulate matter (PM2.5)`, na.rm=T))</code></pre>
+<pre><code>##       mean      sd
+## 1 26.16393 16.8956</code></pre>
+<pre class="r"><code>airpollifeexpec%&gt;% group_by(Country) %&gt;%summarize(mean=mean(`Rural Concentrations of fine particulate matter (PM2.5)`,na.rm=T), sd=sd(`Rural Concentrations of fine particulate matter (PM2.5)`, na.rm=T))</code></pre>
+<pre><code>##      mean       sd
+## 1 24.4388 15.94046</code></pre>
+<p><em>Some of the statistics I found include that the global average life expectancy at birth is 71.79 years. Furthermore, females tend to live longer than males, with expectancies of 74.14 and 69.44 years respectivaley.In addition, the global average concentration of fine particulate matter is 25.60. Urban areas have a higher concentration on average than rural, with 26.16 and 24.44 repesctivaley.</em></p>
+<pre class="r"><code>#Visualizing
+df&lt;-airpollifeexpec%&gt;%na.omit%&gt;%select_if(is.numeric)
+cor&lt;-cor(df)%&gt;%as.data.frame%&gt;%rownames_to_column%&gt;%pivot_longer(-1,names_to=&quot;name&quot;,values_to=&quot;correlation&quot;)
+cor%&gt;%ggplot(aes(rowname,name,fill=correlation))+geom_tile()+scale_fill_gradient2(low=&quot;red&quot;,mid=&quot;white&quot;,high=&quot;blue&quot;)+geom_text(aes(label=round(correlation,2)),color = &quot;black&quot;, size = 4)+ theme(axis.text.x = element_text(angle = 90, hjust = 1))+coord_fixed() </code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+<em>The correlation heatmap above indicates that there is a negative correlation between the concentration of fine particulate matter and life expectancy. There is around a -0.5 correlation between the variables looking at pollution levels and those looking at life expectancies. In addition, all 6 forms of life expectancy are very correlated with one another. This makes logical sense and indicates that countries which have a higher life expectancy at birth have a higher one at age 60 and countries tend to have similar patterns in regard to sex. The variables which measure life expectancy are very correlated, as are those that measure pollution and those two groups of variables have a negative correlation.</em></p>
+<pre class="r"><code>#Visualizing
+ggplot(airpollifeexpec, aes(`Total Concentrations of fine particulate matter (PM2.5)`, `Both Sexes&#39; Life expectancy at birth in years`, color=Continent,stat=&#39;summary&#39;))+geom_point(size = 4, alpha = .5)</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+<em>Firstly, the graph visually presents how lower concentrations of particulate matter are generally associated with longer life spans. It is also interesting how the majority of the countries are clustered with high life expectancies and lower pollution, which could indicate a possible bias in the dataset, because these kind of countries tend to be more industrially deveolped and are therfore more avaliable for research. Further, it also seems as though a lot of African countries tend to have lower life expectancies despite having similar levels of pollution. This speaks to the plethora of factors which impact how long one lives. Finally it appears as though Asian countries tend to be the most polluted.</em></p>
+<pre class="r"><code>#Visualizing
+ggplot(airpollifeexpec, aes(`Both Sexes&#39; Life expectancy at birth in years`,`Both Sexes&#39; Life expectancy at age 60 in years`))+geom_point(size=3,aes(color=`Total Concentrations of fine particulate matter (PM2.5)`))+ scale_color_gradient(low=&quot;yellow&quot;, high=&quot;red&quot;)</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-7-1.png" width="672" />
+<em>Firstly, this graphs speaks to the strong correlation between life expectancy at birth and that at 60. Secondly, the graph further shows how the level of fine particulate matter is negatively correlated with life expectancy. This adds to the data above and further provides validity to the argument that the level of pollution has a directly negative effect on how long people in a given country live for.</em></p>
+<pre class="r"><code>#Dimentionality Reduction
+pc_cluster &lt;-kmeans(df, 5)
+kmean_withinss &lt;- function(k) {
+cluster &lt;- kmeans(df, k)
+return (cluster$tot.withinss) }
+wss &lt;- sapply(2:30, kmean_withinss)
+elbow &lt;-data.frame(2:30, wss)
+ggplot(elbow, aes(x = X2.30, y = wss)) +geom_point() +geom_line() +scale_x_continuous(breaks = seq(1, 30, by = 1))</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>#according to elbow, curve has most dimishing return at 10
+kmeans1 &lt;-kmeans(df, 10)
+kmeans1$size</code></pre>
+<pre><code>##  [1] 14 13  6 14 16 28 24 27 19 22</code></pre>
+<pre class="r"><code>#pretty good homegoneity between clusters
+kmeansclust &lt;- df %&gt;% mutate(cluster=as.factor(kmeans1$cluster))
+kmeansclust %&gt;% ggplot(aes(`Total Concentrations of fine particulate matter (PM2.5)`,`Both Sexes&#39; Life expectancy at birth in years`, color=cluster)) + geom_point()</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<pre class="r"><code>pam1 &lt;- df %&gt;% pam(k=10)
+pamclust&lt;-df %&gt;% mutate(cluster=as.factor(pam1$clustering))
+pamclust %&gt;% ggplot(aes(`Total Concentrations of fine particulate matter (PM2.5)`,`Both Sexes&#39; Life expectancy at birth in years`,color=cluster)) + geom_point()</code></pre>
+<p><img src="/project1_files/figure-html/unnamed-chunk-8-3.png" width="672" /></p>
+<pre class="r"><code>pamclust %&gt;% group_by(cluster) %&gt;% summarize_if(is.numeric,mean,na.rm=T)</code></pre>
+<pre><code>## # A tibble: 10 x 10
+##    cluster `Both Sexes&#39; Li~ `Male Life expe~ `Female Life ex~ `Both Sexes&#39; Li~
+##    &lt;fct&gt;              &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+##  1 1                   66.6             65.3             68.1             17.6
+##  2 2                   77.3             74.3             80.2             22.0
+##  3 3                   75.3             73.3             77.3             20.2
+##  4 4                   62.7             60.8             64.6             16.8
+##  5 5                   81.5             79.1             83.8             24.4
+##  6 6                   72.6             69.5             75.8             19.3
+##  7 7                   74.5             73.3             76.1             19.2
+##  8 8                   60.5             59.1             61.8             16.1
+##  9 9                   72.0             69.1             75.0             19.0
+## 10 10                  63.6             61.7             65.6             17.1
+## # ... with 5 more variables: `Male Life expectancy at age 60 in years` &lt;dbl&gt;,
+## #   `Female Life expectancy at age 60 in years` &lt;dbl&gt;, `Total Concentrations of
+## #   fine particulate matter (PM2.5)` &lt;dbl&gt;, `Urban Concentrations of fine
+## #   particulate matter (PM2.5)` &lt;dbl&gt;, `Rural Concentrations of fine
+## #   particulate matter (PM2.5)` &lt;dbl&gt;</code></pre>
+<p><em>The data did a good job of clustering into a group of 10. This could indicate that the previous way of labeling the countries by continent is limiting and is not a very accurate way of assesing a country’s level of pollution or life expectancy. This speaks to the reductive nature of taking a diverse group of countries and putting them into a geographically assigned boundary which does not accurately reflect the political and cultural reality of the country. I believe this is one of the reasons that the world health organiztion and various other organiztions have begin to look at countries through the more specific lens of regions as opposed to looking at them through the reductive framework of continents.</em></p>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

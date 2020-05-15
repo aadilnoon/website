@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1589520363781.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "D2147BD8",
+    "lastKnownWriteTime" : 1589522656,
+    "last_content_update" : 1589522656605,
+    "path" : "C:/Users/Aadil Noon/Desktop/Website/content/project2.Rmd",
+    "project_path" : "content/project2.Rmd",
+    "properties" : {
+        "cursorPosition" : "22,33",
+        "scrollLine" : "10"
+    },
+    "read_only" : false,
+    "read_only_alternatives" : [
+    ],
+    "relative_order" : 7,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

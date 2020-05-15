@@ -1,0 +1,394 @@
+---
+title: "The associations of income, gender, and life expectancies between countries."
+author: "Aadil Noon"
+date: ''
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+---
+
+
+
+<pre class="r"><code>#EXTRA FUNCTIONS
+class_diag&lt;-function(probs,truth){
+  
+  tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+
+  if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1
+  
+  #CALCULATE EXACT AUC
+  ord&lt;-order(probs, decreasing=TRUE)
+  probs &lt;- probs[ord]; truth &lt;- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+  TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+  
+  n &lt;- length(TPR)
+  auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}</code></pre>
+<pre class="r"><code>#libraries
+library(ggplot2)
+library(readxl)
+library(dplyr)
+library(cluster)
+library(graphics)
+library(plyr)
+library(tidyverse)
+library(lmtest)
+library(sandwich)
+#life expectancies data/wrangling 
+lifeexpec &lt;- read_xlsx(&#39;Life expectancy (3).xlsx&#39;)
+lifeexpec&lt;-lifeexpec%&gt;%pivot_wider(names_from = &#39;Year&#39;,values_from = &#39;Country&#39;)
+lifeexpec&lt;-lifeexpec%&gt;%select(-c(&#39;2000&#39;:&#39;2015&#39;))
+lifeexpec&lt;-lifeexpec%&gt;%na.omit()
+lifeexpec&lt;-lifeexpec%&gt;%rename(c(&#39;2016&#39;=&#39;Country&#39;))
+lifeexpec&lt;-lifeexpec%&gt;%select(-c(contains(&#39;birth&#39;)))
+#sex ratio data/creating a binary
+sexratio &lt;- read_xlsx(&#39;sexratio.xlsx&#39;)
+male&lt;-sexratio%&gt;%filter(`greater male sex ratio`&gt;100)%&gt;%mutate(`greater male sex ratio`=1)
+female&lt;-sexratio%&gt;%filter(`greater male sex ratio`&lt;100)%&gt;%mutate(`greater male sex ratio`=0)
+sexratio&lt;-full_join(female,male)
+#joining of life expectancies and sex ratios
+lifeexpecsex&lt;-inner_join(lifeexpec,sexratio,by=&quot;Country&quot;)
+#income data
+income&lt;-read_xlsx(&#39;income.xlsx&#39;)
+#final join
+lifeexpecsexinc&lt;-inner_join(lifeexpecsex,income,by=&quot;Country&quot;)
+data&lt;-lifeexpecsexinc</code></pre>
+<p><em>I combined data from the world health association which organized different kinds of life expectancies with data from the UN about gender ratios per country and data from the world bank on average incomes per country. My goal is to explore the assocations of a country’s average income, its life expectancies, and its gender ratio.</em></p>
+<ul>
+<li>**1.</li>
+</ul>
+<pre class="r"><code>#MANOVA
+man1&lt;-manova(cbind(`Both Sexes&#39; Life expectancy at age 60 in years`, `Male Life expectancy at age 60 in years`,`Female Life expectancy at age 60 in years`)~IncomeGroup, data=data)
+summary(man1)</code></pre>
+<pre><code>## Df Pillai approx F num Df den Df Pr(&gt;F)
+## IncomeGroup 3 0.76887 17.69 9 462 &lt; 2.2e-16 ***
+## Residuals 154
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>#significant results and therfore moved onto ANOVAs
+summary.aov(man1)</code></pre>
+<pre><code>## Response Both Sexes&#39; Life expectancy at age 60 in years
+:
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## IncomeGroup 3 874.31 291.436 78.481 &lt; 2.2e-16 ***
+## Residuals 154 571.87 3.713
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response Male Life expectancy at age 60 in years :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## IncomeGroup 3 618.87 206.290 52.872 &lt; 2.2e-16 ***
+## Residuals 154 600.86 3.902
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response Female Life expectancy at age 60 in years :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## IncomeGroup 3 1163.98 387.99 94.177 &lt; 2.2e-16 ***
+## Residuals 154 634.46 4.12
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>#All 3 variables were significant and therfore moved onto post-hoc t tests
+pairwise.t.test(data$`Both Sexes&#39; Life expectancy at age 60 in years`, data$IncomeGroup, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: data$`Both Sexes&#39; Life expectancy at age 60 in
+years` and data$IncomeGroup
+##
+## High income Low income Lower middle income
+## Low income &lt; 2e-16 - -
+## Lower middle income &lt; 2e-16 0.011 -
+## Upper middle income 1.4e-12 3.2e-11 2.1e-06
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(data$`Male Life expectancy at age 60 in years`, data$IncomeGroup, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: data$`Male Life expectancy at age 60 in years` and
+data$IncomeGroup
+##
+## High income Low income Lower middle income
+## Low income &lt; 2e-16 - -
+## Lower middle income &lt; 2e-16 0.08122 -
+## Upper middle income 1.8e-11 2.3e-06 0.00084
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(data$`Female Life expectancy at age 60 in years`, data$IncomeGroup, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: data$`Female Life expectancy at age 60 in years`
+and data$IncomeGroup
+##
+## High income Low income Lower middle income
+## Low income &lt; 2e-16 - -
+## Lower middle income &lt; 2e-16 0.0021 -
+## Upper middle income 3.1e-12 5.9e-15 1.6e-08
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>#Performed 1 Manova, 3 Anova, and 12 post hoc t tests
+0.05/12</code></pre>
+<pre><code>## [1] 0.004166667</code></pre>
+<pre class="r"><code>#to keep the chance of a Type one error at 0.05, the new alpha is 0.004166667
+1-.95^12</code></pre>
+<pre><code>## [1] 0.4596399</code></pre>
+<pre class="r"><code># if it was unjusted the chance of a Type one error is just above 0.45</code></pre>
+<p><em>The initial MANOVA test showed that there was signicant mean difference of the three life expectancy variables across the four income groups. The ANOVA tests then showed each variable had a signifcant interaction with the variable of income group. The post hoc tests then showed that for overall life expectancy, male and female life expectancies that there were signifcant differences bewteen low and high income groups along with lower middle class and high income, and Upper Middle income and High income, Upper middle income and low income, and lower middle and upper middle incomes. This last result was much more pronounced in female life expectancy than male. The assumptions of the various test were likely met as the data consited of random samples and independent observations. Futher, the sample groups were large enough to avoid questions of normality and ther was likely equal variance between groups.</em></p>
+<ul>
+<li>**2.</li>
+</ul>
+<pre class="r"><code>obs_F&lt;-78.481 #obsereved F for both sexes&#39; life expectancy
+Fs&lt;-replicate(5000,{
+new&lt;-data%&gt;%mutate(`Both Sexes&#39; Life expectancy at age 60 in years`=sample(`Both Sexes&#39; Life expectancy at age 60 in years`))
+SSW&lt;- new%&gt;%group_by(IncomeGroup)%&gt;%summarize(SSW=sum((`Both Sexes&#39; Life expectancy at age 60 in years`-mean(`Both Sexes&#39; Life expectancy at age 60 in years`))^2))%&gt;%
+summarize(sum(SSW))%&gt;%pull
+SSB&lt;- new%&gt;%mutate(mean=mean(`Both Sexes&#39; Life expectancy at age 60 in years`))%&gt;%group_by(IncomeGroup)%&gt;%mutate(groupmean=mean(`Both Sexes&#39; Life expectancy at age 60 in years`))%&gt;%
+summarize(SSB=sum((mean-groupmean)^2))%&gt;%summarize(sum(SSB))%&gt;%pull
+(SSB/3)/(SSW/154)
+})
+mean(Fs&gt;obs_F)</code></pre>
+<pre><code>## [1] 0</code></pre>
+<pre class="r"><code>hist(Fs, prob=T); abline(v = obs_F, col=&quot;red&quot;,add=T)</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-4-1.png" width="768" style="display: block; margin: auto;" /></p>
+<p><em>The null hypothesis is that life expectancy of both sexes does not differ significantly between income groups. My alternative hypothesis is that life expectancy of both sexes does differ significantly between income groups. Because I got a p value of 0, I am very confident in rejecting the null hypothesis.</em></p>
+<ul>
+<li>**3.</li>
+</ul>
+<pre class="r"><code>#Centering
+data$male_c&lt;-data$`Male Life expectancy at age 60 in years` -mean(data$`Male Life expectancy at age 60 in years`)
+data$female_c&lt;-data$`Female Life expectancy at age 60 in years` -mean(data$`Female Life expectancy at age 60 in years`)
+data$both_c&lt;-data$`Both Sexes&#39; Life expectancy at age 60 in years` -mean(data$`Both Sexes&#39; Life expectancy at age 60 in years`)
+#regression
+fit&lt;-lm(both_c~male_c*female_c,data=data)
+summary(fit)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = both_c ~ male_c * female_c, data = data)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -0.31046 -0.04984 0.01123 0.05260 0.25711
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -0.015837 0.010008 -1.582 0.1156
+## male_c 0.427722 0.007076 60.447 &lt;2e-16 ***
+## female_c 0.559999 0.005597 100.055 &lt;2e-16 ***
+## male_c:female_c 0.001836 0.000813 2.259 0.0253 *
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 0.08976 on 154 degrees of
+freedom
+## Multiple R-squared: 0.9991, Adjusted R-squared: 0.9991
+## F-statistic: 5.978e+04 on 3 and 154 DF, p-value: &lt;
+2.2e-16</code></pre>
+<pre class="r"><code>#graph
+resids&lt;-fit$residuals; fitvals&lt;-fit$fitted.values
+ggplot()+geom_qq(aes(sample=resids))+geom_qq_line(aes(sample=resids), color=&#39;red&#39;)</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-5-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#assumptions
+#linear
+breaks &lt;- seq(min(data$female_c), max(data$female_c), len=8)
+ggplot(data, aes(female_c,both_c)) +
+geom_point(alpha=.3) +
+theme_bw()+
+geom_vline(xintercept=breaks, lty=2,color=&#39;gray50&#39;)</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-5-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#normality
+ggplot()+geom_histogram(aes(resids),bins=10)</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-5-3.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#homoskedasticity
+resids&lt;-fit$residuals; fitvals&lt;-fit$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, col=&quot;red&quot;)</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-5-4.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Robust SE
+coeftest(fit, vcov = vcovHC(fit))[,1:2]</code></pre>
+<pre><code>##                     Estimate   Std. Error
+## (Intercept)     -0.015837289 0.0115602418
+## male_c           0.427722224 0.0111152872
+## female_c         0.559999119 0.0087335888
+## male_c:female_c  0.001836149 0.0008136394</code></pre>
+<pre class="r"><code>#proportion explained
+(sum((data$both_c-mean(data$both_c))^2)-sum(fit$residuals^2))/sum((data$both_c-mean(data$both_c))^2)</code></pre>
+<pre><code>## [1] 0.999142</code></pre>
+<p><em>Based on the coefficents, there is a slight interaction between life expectancy between the sexes and much larger interactions with the each of them and the overall life expectancy.More robust standard errors did not impact the results, indicating a strong model. My model accounts for nearly all off the variation (99.9142%). </em></p>
+<ul>
+<li>**4.</li>
+</ul>
+<pre class="r"><code>samp_distn&lt;-replicate(5000, {
+boot_dat &lt;- sample_frac(data, replace=T) 
+fit &lt;- lm(both_c~male_c*female_c, data=boot_dat) 
+coef(fit) 
+})
+summary(fit)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = both_c ~ male_c * female_c, data = data)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -0.31046 -0.04984 0.01123 0.05260 0.25711
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) -0.015837 0.010008 -1.582 0.1156
+## male_c 0.427722 0.007076 60.447 &lt;2e-16 ***
+## female_c 0.559999 0.005597 100.055 &lt;2e-16 ***
+## male_c:female_c 0.001836 0.000813 2.259 0.0253 *
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 0.08976 on 154 degrees of
+freedom
+## Multiple R-squared: 0.9991, Adjusted R-squared: 0.9991
+## F-statistic: 5.978e+04 on 3 and 154 DF, p-value: &lt;
+2.2e-16</code></pre>
+<p><em>Bootstrapped SEs produced the same cooefficets and p-values along with SE values.</em></p>
+<ul>
+<li><strong>5. (40 pts)</strong> Perform a logistic regression predicting a binary categorical variable (if you don’t have one, make/get one) from at least two explanatory variables (interaction not necessary).</li>
+</ul>
+<pre class="r"><code>data3&lt;-data[,-c(4,7,8,9)]
+fit&lt;-glm(data3$&#39;greater male sex ratio&#39;~`Male Life expectancy at age 60 in years`+`Female Life expectancy at age 60 in years`,data=data3, family=&quot;binomial&quot;)
+coeftest(fit)</code></pre>
+<pre><code>##
+## z test of coefficients:
+##
+## Estimate Std. Error z value Pr(&gt;|z|)
+## (Intercept) 0.094091 1.145946 0.0821 0.934561
+## `Male Life expectancy at age 60 in years` 0.630912
+0.193841 3.2548 0.001135 **
+## `Female Life expectancy at age 60 in years` -0.583529
+0.159646 -3.6551 0.000257 ***
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>#confusion matrix
+probs&lt;-predict(fit,type=&quot;response&quot;) 
+table(predict=as.numeric(probs&gt;.5),truth=data$&#39;greater male sex ratio&#39;)%&gt;%addmargins</code></pre>
+<pre><code>##        truth
+## predict   0   1 Sum
+##     0    81  40 121
+##     1    18  19  37
+##     Sum  99  59 158</code></pre>
+<pre class="r"><code>#Sensitivty=
+19/59</code></pre>
+<pre><code>## [1] 0.3220339</code></pre>
+<pre class="r"><code>#Specficity= 
+81/99</code></pre>
+<pre><code>## [1] 0.8181818</code></pre>
+<pre class="r"><code>#Precision=
+19/37</code></pre>
+<pre><code>## [1] 0.5135135</code></pre>
+<pre class="r"><code>#accuracy=
+(81+19)/158</code></pre>
+<pre><code>## [1] 0.6329114</code></pre>
+<pre class="r"><code>#logit
+odds&lt;-function(p)p/(1-p)
+logit&lt;-function(p)log(odds(p))
+p&lt;-data$&#39;greater male sex ratio&#39;
+ggplot()+ stat_function(aes(p),fun=logit,geom=&quot;line&quot;)+ ylab(&quot;logit(p)&quot;)+xlab(&quot;p&quot;)</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-7-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#ROC curve and AUC
+roc1&lt;-ggplot()+geom_roc(aes(d=p,m=probs))
+roc1</code></pre>
+<p><img src="/project2_files/figure-html/unnamed-chunk-7-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#AUC=
+calc_auc(roc1)</code></pre>
+<pre><code>##   PANEL group       AUC
+## 1     1    -1 0.6787365</code></pre>
+<pre class="r"><code>#10-fold
+set.seed(1234)
+k=10
+data1&lt;-data3%&gt;%sample_frac()
+folds &lt;- ntile(1:nrow(data1),n=10) 
+
+#diags&lt;-NULL
+#for(i in 1:k){          
+#train&lt;-data1[folds!=i,] 
+#test&lt;-data1[folds==i,]  
+
+#truth&lt;-test$&#39;greater male sex ratio&#39;
+
+#fit &lt;- glm(&#39;greater male sex ratio&#39;~&#39;Male Life expectancy at age 60 in years&#39;+&#39;Female Life expectancy at age 60 in years&#39;, data=train, family=&quot;binomial&quot;)
+
+#probs&lt;- predict(fit, newdata=test, type=&quot;response&quot;)
+
+#diags&lt;-rbind(diags,class_diag(probs,truth)) 
+#}
+#mean(diags$auc)
+#summary(diags)</code></pre>
+<p><em>There is a significant positive association of Male life expectancy with a country with more men than women. There is also a significant negative association of Female life expectancy and a larger male sex ratio in a country.My model is not very sensitive but is relatively Specific and is medicoraly precise and accurate. </em></p>
+<pre><code>- Perform 10-fold (or repeated random sub-sampling) CV and report average out-of-sample Accuracy, Sensitivity, and Recall (10)</code></pre>
+<ul>
+<li>**6. Perform 10-fold CV using this model: if response in binary, compare model’s out-of-sample accuracy to that of your logistic regression in part 5; if response is numeric, compare the residual standard error (at the bottom of the summary output, aka RMSE): lower is better fit!</li>
+</ul>
+<pre class="r"><code>library(glmnet)
+fit&lt;-lm(`Both Sexes&#39; Life expectancy at age 60 in years`~.,data=data3)
+set.seed(1234)
+predic&lt;-model.matrix(fit)
+x&lt;-predic[,-1]
+y&lt;-as.matrix(data$`Both Sexes&#39; Life expectancy at age 60 in years`)
+x&lt;-scale(x)
+cv&lt;-cv.glmnet(x,y)
+lasso&lt;-glmnet(x,y,lambda=cv$lambda.1se)
+coef(lasso)</code></pre>
+<pre><code>## 7 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                                                    s0
+## (Intercept)                                 19.771519
+## `Male Life expectancy at age 60 in years`    1.184498
+## `Female Life expectancy at age 60 in years`  1.851758
+## `greater male sex ratio`                     .       
+## IncomeGroupLow income                        .       
+## IncomeGroupLower middle income               .       
+## IncomeGroupUpper middle income               .</code></pre>
+<pre class="r"><code>#10-fold
+set.seed(1234)
+k=10
+data1&lt;-data[sample(nrow(data)),] 
+folds&lt;-cut(seq(1:nrow(data)),breaks=10,labels=F) 
+
+fit&lt;-glm(`Both Sexes&#39; Life expectancy at age 60 in years`~`Female Life expectancy at age 60 in years`+`Male Life expectancy at age 60 in years`,data=data3)
+
+diags&lt;-NULL
+for(i in 1:k){          
+train&lt;-data1[folds!=i,] 
+test&lt;-data1[folds==i,]  
+
+truth&lt;-test$&#39;greater male sex ratio&#39;
+
+probs&lt;- predict(fit, newdata=test, type=&quot;response&quot;)
+
+diags&lt;-rbind(diags,class_diag(probs,truth)) 
+}
+RSS &lt;- c(crossprod(fit$residuals))
+MSE &lt;- RSS / length(fit$residuals)
+#RMSE=
+sqrt(MSE)</code></pre>
+<pre><code>## [1] 0.09007567</code></pre>
+<p><em>The variables that the LASSO left in were female and male life expectancies.The model has a low RMSE at 0.09007567.</em>
+…</p>
